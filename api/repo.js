@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
     packages: [{
       details: `https://github.com/${owner}/${repo}${branch != 'master' ? `/tree/${branch}` : ''}`,
       releases: [{
-        version: strftime(commitDate, '%Y%m%d.%H%M%S.0'),
+        version: strftime(commitDate, '%Y.%m.%d.%H.%M.%S'),
         url: `https://github.com/${owner}/${repo}/archive/${branch}.zip`,
         date: strftime(commitDate, '%Y-%m-%d %H:%M:%S'),
         sublime_text: '*'
