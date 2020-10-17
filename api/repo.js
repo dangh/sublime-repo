@@ -14,14 +14,17 @@ module.exports = async (req, res) => {
       octokit.git.getRef({ owner, repo, ref: `heads/master` }).catch(err => {}),
       octokit.git.getRef({ owner, repo, ref: `heads/main` }).catch(err => {}),
     ]);
+    branch = master ? 'master' : 'main';
     ref = (master || main).data;
   }
   let { data: commit } = await octokit.git.getCommit({ owner, repo, commit_sha: ref.object.sha });
   let commitDate = new Date(commit.committer.date);
+  let detailsUrl = `https://github.com/${owner}/${repo}`;
+  if (!['master', 'main'].includes(branch)) detailsUrl += `/tree/${branch}`;
   res.json({
     schema_version: '3.0.0',
     packages: [{
-      details: `https://github.com/${owner}/${repo}${branch != 'master' ? `/tree/${branch}` : ''}`,
+      details: detailsUrl,
       releases: [{
         version: strftime(commitDate, '%Y.%m.%d.%H.%M.%S'),
         url: `https://github.com/${owner}/${repo}/archive/${branch}.zip`,
