@@ -4,9 +4,18 @@ const GITHUB_ACCESS_TOKEN = process.env.GITHUB_ACCESS_TOKEN;
 
 module.exports = async (req, res) => {
   let [owner, repo, ...branch] = req.query.url.split('/');
-  branch = (branch.join('/') || 'master');
+  branch = branch.join('/');
   let octokit = new Octokit({ auth: GITHUB_ACCESS_TOKEN });
-  let { data: ref } = await octokit.git.getRef({ owner, repo, ref: `heads/${branch}` });
+  let ref;
+  if (branch) {
+    ref = (await octokit.git.getRef({ owner, repo, ref: `heads/${branch}` })).data;
+  } else {
+    let [master, main] = await Promise.all([
+      octokit.git.getRef({ owner, repo, ref: `heads/master` }).catch(err => {}),
+      octokit.git.getRef({ owner, repo, ref: `heads/main` }).catch(err => {}),
+    ]);
+    ref = (master || main).data;
+  }
   let { data: commit } = await octokit.git.getCommit({ owner, repo, commit_sha: ref.object.sha });
   let commitDate = new Date(commit.committer.date);
   res.json({
