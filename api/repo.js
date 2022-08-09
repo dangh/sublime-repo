@@ -19,7 +19,7 @@ async function getPackage(url) {
     details: `https://github.com/${owner}/${repo}`,
     releases: [{
       version: commit.commit.committer.date.split(/[^\d]+/).filter(Boolean).join('.'),
-      url: `https://api.github.com/repos/${owner}/${repo}/tarball/${commit.sha}`,
+      url: `https://api.github.com/repos/${owner}/${repo}/zipball/${commit.sha}`,
       date: commit.commit.committer.date.replace('T', ' ').replace('Z', ''),
       sublime_text: '*',
     }],
