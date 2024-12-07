@@ -4,8 +4,8 @@ module.exports = async (req, res) => {
   res.json({
     schema_version: '3.0.0',
     packages: await Promise.all(
-      req.query.url.split(',').map(getPackage)
-    )
+      req.query.url.split(',').map(url => getPackage(url).catch(e => null))
+    ).filter(Boolean)
   });
 };
 
